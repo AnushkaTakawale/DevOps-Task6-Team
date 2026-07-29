@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Configure Git
         run: |
@@ -24,12 +25,17 @@ jobs:
           git config --global user.email "github-actions@github.com"
 
       - name: Add Company Repository
+        env:
+          COMPANY_PAT: ${{ secrets.COMPANY_PAT }}
         run: |
-          git remote add company https://x-access-token:${{ secrets.COMPANY_PAT }}@github.com/AnushkaTakawale/DevOps-Task6-Company.git
+          git remote remove company || true
+          git remote add company https://x-access-token:${COMPANY_PAT}@github.com/AnushkaTakawale/DevOps-Task6-Company.git
 
       - name: Fetch Company Repository
         run: git fetch company
 
       - name: Push Development Branch
         run: |
-          git push company development:development
+          git push company HEAD:development
+
+     
