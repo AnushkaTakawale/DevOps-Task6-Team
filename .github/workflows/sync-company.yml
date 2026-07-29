@@ -28,14 +28,17 @@ jobs:
         env:
           COMPANY_PAT: ${{ secrets.COMPANY_PAT }}
         run: |
-          git remote remove company || true
           git remote add company https://x-access-token:${COMPANY_PAT}@github.com/AnushkaTakawale/DevOps-Task6-Company.git
 
       - name: Fetch Company Repository
-        run: git fetch company
-
-      - name: Push Development Branch
         run: |
-          git push company HEAD:development
+          git fetch company
 
-     
+      - name: Rebase with Company Development
+        run: |
+          git checkout development
+          git pull company development --rebase || true
+
+      - name: Push Development to Company
+        run: |
+          git push company development:development
