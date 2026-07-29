@@ -5,9 +5,6 @@ on:
     branches:
       - development
 
-permissions:
-  contents: write
-
 jobs:
   sync-company:
     runs-on: ubuntu-latest
@@ -23,20 +20,9 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: Verify Secret Exists
-  run: |
-    if [ -z "${{ secrets.COMPANY_PAT }}" ]; then
-      echo "PAT Secret NOT Found"
-      exit 1
-    else
-      echo "PAT Secret Found"
-    fi
-      - name: Fetch Company Repository
-        run: git fetch company
-
-      - name: Push Development Branch
-  env:
-    TOKEN: ${{ secrets.COMPANY_PAT }}
-  run: |
-    git remote set-url company https://x-access-token:${TOKEN}@github.com/AnushkaTakawale/DevOps-Task6-Company.git
-    git push company development:development
+      - name: Push to Company Repository
+        env:
+          COMPANY_PAT: ${{ secrets.COMPANY_PAT }}
+        run: |
+          git remote add company https://x-access-token:${COMPANY_PAT}@github.com/AnushkaTakawale/DevOps-Task6-Company.git
+          git push company HEAD:development --force
