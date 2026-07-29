@@ -1,0 +1,42 @@
+name: Sync Team Development to Company
+
+on:
+  push:
+    branches:
+      - development
+
+permissions:
+  contents: write
+
+jobs:
+  sync-company:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Team Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Verify Secret Exists
+  run: |
+    if [ -z "${{ secrets.COMPANY_PAT }}" ]; then
+      echo "PAT Secret NOT Found"
+      exit 1
+    else
+      echo "PAT Secret Found"
+    fi
+      - name: Fetch Company Repository
+        run: git fetch company
+
+      - name: Push Development Branch
+  env:
+    TOKEN: ${{ secrets.COMPANY_PAT }}
+  run: |
+    git remote set-url company https://x-access-token:${TOKEN}@github.com/AnushkaTakawale/DevOps-Task6-Company.git
+    git push company development:development
